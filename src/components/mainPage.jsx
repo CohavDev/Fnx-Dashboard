@@ -3,12 +3,14 @@ import InputSection from "./inputSection";
 import { useEffect, useState } from "react";
 import connectUnit from "../services/connectUnit";
 import { Button } from "@mui/joy";
+import replaceUnit from "../services/replaceUnit";
 
 export default function MainPage(props) {
   const [subscriber, setSubscriber] = useState(0);
   const [license, setLicense] = useState(0);
   const [innerId, setInnerId] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [autoCompleteData, setAutoCompleteData] = useState([]);
   const [serverMsgSuccess, setMsgSuccess] = useState("");
 
   async function connectUnitHandleClick() {
@@ -18,6 +20,20 @@ export default function MainPage(props) {
       setMsgSuccess(result);
     }
   }
+  async function replaceUnitHandleClick() {
+    if (autoCompleteData) {
+      const vehicle_id = autoCompleteData[license]["vehicle_id"];
+      const result = await replaceUnit(license, vehicle_id, setLoading);
+      if (result) {
+        // const info = subscriber +", "+license +", "+innerId
+        setMsgSuccess(
+          "בקשה לשליחות חדשה נשלחה, בדוק בדינמיקה כדי לוודא שהתקבלה"
+        );
+      } else {
+        setMsgSuccess("בקשת שליחות נכשלה");
+      }
+    }
+  }
   return (
     <Box>
       <InputSection
@@ -25,6 +41,7 @@ export default function MainPage(props) {
           subscriber: setSubscriber,
           license: setLicense,
           innerId: setInnerId,
+          autoCompleteData: setAutoCompleteData,
         }}
       />
       <Box sx={{ paddingTop: 10 }}>
@@ -36,9 +53,15 @@ export default function MainPage(props) {
           צמד
         </Button>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Button variant="outlined">פתח שליחות</Button>
+          <Button variant="outlined">פתח שליחות פקטיבית</Button>
 
-          <Button variant="outlined">החלף יחידה</Button>
+          <Button
+            loading={loading}
+            variant="outlined"
+            onClick={() => replaceUnitHandleClick()}
+          >
+            החלף יחידה (שליחות אמיתית)
+          </Button>
         </Box>
       </Box>
       {serverMsgSuccess !== "" && (

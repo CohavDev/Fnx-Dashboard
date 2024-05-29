@@ -1,5 +1,4 @@
 import axios from "axios";
-import cors from "cors";
 export default async function connectUnit(
   subscriber,
   license,
@@ -17,6 +16,10 @@ export default async function connectUnit(
     "innerId:",
     innerId
   );
+  if (subscriber === "" || license === "" || innerId === "") {
+    loadingCallBack(false);
+    return "Subscriber / License / InnerId is missing";
+  }
   return await axios
     .post(URL, {
       subscriber: subscriber,
