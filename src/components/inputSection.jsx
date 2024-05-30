@@ -11,9 +11,16 @@ import { useEffect, useState } from "react";
 import { MenuItem } from "@mui/material";
 import { Input } from "@mui/base";
 
+//redux
+import { useSelector, useDispatch } from "react-redux";
+import { setLicense } from "../features/license/licenseSlice";
+//end of redux
+
 export default function InputSection(props) {
   const [subscriber, setSubscriber] = useState(0);
-  const [license, setLicense] = useState();
+  // const [license, setLicense] = useState();
+  const license = useSelector((state) => state.license.value);
+  const dispatch = useDispatch();
   const [innerId, setInnerId] = useState();
   const [lastGRPS, setLastGRPS] = useState();
   const [autoCompleteData, setAutoCompleteData] = useState([]);
@@ -23,7 +30,7 @@ export default function InputSection(props) {
     props.set.autoCompleteData(res);
     const licenseFirst = Object.keys(res)[0];
     console.log("licenses = ", licenseFirst);
-    setLicense(licenseFirst);
+    dispatch(setLicense(licenseFirst));
   }
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -45,9 +52,9 @@ export default function InputSection(props) {
         setInnerId("");
         setLastGRPS("");
       }
-      props.set.license(license);
+      // props.set.license(license);
     } else {
-      props.set.license();
+      // props.set.license();
       props.set.autoCompleteData();
       setInnerId("");
       setLastGRPS("");
@@ -79,7 +86,7 @@ export default function InputSection(props) {
         label="מספר רכב"
         select
         value={license === undefined ? "" : license}
-        onChange={(e) => setLicense(e.target.value)}
+        onChange={(e) => dispatch(setLicense(e.target.value))}
       >
         {Object.keys(autoCompleteData).map((optionLicense) => (
           <MenuItem value={optionLicense} key={optionLicense}>

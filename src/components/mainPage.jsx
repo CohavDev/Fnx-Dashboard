@@ -4,10 +4,16 @@ import { useEffect, useState } from "react";
 import connectUnit from "../services/connectUnit";
 import { Button } from "@mui/joy";
 import replaceUnit from "../services/replaceUnit";
+//redux
+import { useSelector, useDispatch } from "react-redux";
+import { setLicense } from "../features/license/licenseSlice";
+//end of redux
 
 export default function MainPage(props) {
   const [subscriber, setSubscriber] = useState(0);
-  const [license, setLicense] = useState(0);
+  // const [license, setLicense] = useState(0);
+  const license = useSelector((state) => state.license.value);
+  const dispatch = useDispatch();
   const [innerId, setInnerId] = useState(0);
   const [loading, setLoading] = useState(false);
   const [autoCompleteData, setAutoCompleteData] = useState([]);
@@ -39,7 +45,8 @@ export default function MainPage(props) {
       <InputSection
         set={{
           subscriber: setSubscriber,
-          license: setLicense,
+          // license: setLicense,
+          license: (val) => dispatch(setLicense(val)),
           innerId: setInnerId,
           autoCompleteData: setAutoCompleteData,
         }}
