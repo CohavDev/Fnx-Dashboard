@@ -58,9 +58,10 @@ export default function MainPage(props) {
           <Button
             loading={loading}
             variant="outlined"
+            color="danger"
             onClick={() => replaceUnitHandleClick()}
           >
-            החלף יחידה (שליחות אמיתית)
+            החלף יחידה (כשיש יחידה קיימת)
           </Button>
         </Box>
       </Box>

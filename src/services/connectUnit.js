@@ -20,19 +20,26 @@ export default async function connectUnit(
     loadingCallBack(false);
     return "Subscriber / License / InnerId is missing";
   }
-  return await axios
-    .post(URL, {
-      subscriber: subscriber,
-      license: license,
-      innerId: innerId,
-    })
-    .then((res) => {
-      loadingCallBack(false);
+  try {
+    return await axios
+      .post(URL, {
+        subscriber: subscriber,
+        license: license,
+        innerId: innerId,
+      })
+      .then((res) => {
+        loadingCallBack(false);
 
-      console.log(res);
-      if (res.status === 200) {
-        return res.data;
-      }
-      return false; //error
-    });
+        console.log(res);
+        if (res.status === 200) {
+          return res.data;
+        }
+        return false; //error
+      });
+  } catch (error) {
+    console.log(error);
+    loadingCallBack(false);
+
+    return "Network error occured";
+  }
 }

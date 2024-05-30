@@ -11,18 +11,25 @@ export default async function replaceUnit(
     loadingCallBack(false);
     return "License is missing";
   }
-  return await axios
-    .post(URL, {
-      license: license,
-      vehicle_id: vehicle_id,
-    })
-    .then((res) => {
-      loadingCallBack(false);
+  try {
+    return await axios
+      .post(URL, {
+        license: license,
+        vehicle_id: vehicle_id,
+      })
+      .then((res) => {
+        loadingCallBack(false);
 
-      console.log(res);
-      if (res.status === 200) {
-        return res.data;
-      }
-      return false; //error
-    });
+        console.log(res);
+        if (res.status === 200) {
+          return res.data;
+        }
+        return false; //error
+      });
+  } catch (error) {
+    console.log(error);
+    loadingCallBack(false);
+
+    return "Network error occured";
+  }
 }
