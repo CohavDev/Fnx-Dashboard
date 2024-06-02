@@ -6,23 +6,24 @@ import { Button } from "@mui/joy";
 import replaceUnit from "../services/replaceUnit";
 //redux
 import { useSelector, useDispatch } from "react-redux";
-import { setLicense } from "../features/license/licenseSlice";
+import { setLicense } from "../features/slices/licenseSlice";
+import { setInnerID } from "../features/slices/innerIDSlice";
+import { setSubscriber } from "../features/slices/subscriberSlice";
+import AlertDialogModal from "./alertDialog";
 //end of redux
 
 export default function MainPage(props) {
-  const [subscriber, setSubscriber] = useState(0);
-  // const [license, setLicense] = useState(0);
-  const license = useSelector((state) => state.license.value);
   const dispatch = useDispatch();
-  const [innerId, setInnerId] = useState(0);
+  const subscriber = useSelector((state) => state.subscriber.value);
+  const license = useSelector((state) => state.license.value);
+  const innerID = useSelector((state) => state.innerID.value);
   const [loading, setLoading] = useState(false);
   const [autoCompleteData, setAutoCompleteData] = useState([]);
   const [serverMsgSuccess, setMsgSuccess] = useState("");
 
   async function connectUnitHandleClick() {
-    const result = await connectUnit(subscriber, license, innerId, setLoading);
+    const result = await connectUnit(subscriber, license, innerID, setLoading);
     if (result) {
-      // const info = subscriber +", "+license +", "+innerId
       setMsgSuccess(result);
     }
   }
@@ -31,7 +32,6 @@ export default function MainPage(props) {
       const vehicle_id = autoCompleteData[license]["vehicle_id"];
       const result = await replaceUnit(license, vehicle_id, setLoading);
       if (result) {
-        // const info = subscriber +", "+license +", "+innerId
         setMsgSuccess(
           "בקשה לשליחות חדשה נשלחה, בדוק בדינמיקה כדי לוודא שהתקבלה"
         );
@@ -44,10 +44,6 @@ export default function MainPage(props) {
     <Box>
       <InputSection
         set={{
-          subscriber: setSubscriber,
-          // license: setLicense,
-          license: (val) => dispatch(setLicense(val)),
-          innerId: setInnerId,
           autoCompleteData: setAutoCompleteData,
         }}
       />
@@ -62,14 +58,19 @@ export default function MainPage(props) {
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Button variant="outlined">פתח שליחות פקטיבית</Button>
 
-          <Button
+          {/* <Button
             loading={loading}
             variant="outlined"
             color="danger"
             onClick={() => replaceUnitHandleClick()}
           >
             החלף יחידה (כשיש יחידה קיימת)
-          </Button>
+          </Button> */}
+          <AlertDialogModal
+            buttonText={"החלף יחידה (כשיש יחידה קיימת)"}
+            callBackConfirm={replaceUnitHandleClick}
+            loading={loading}
+          />
         </Box>
       </Box>
       {serverMsgSuccess !== "" && (

@@ -1,20 +1,23 @@
 import { TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { NumericFormat } from "react-number-format";
+import { useDispatch } from "react-redux";
+import { InputAdornment } from "@mui/material";
+import { Person, AdUnits } from "@mui/icons-material";
 
 export default function InputBox(props) {
-  const [val, setVal] = useState("");
+  const dispatch = useDispatch();
+  const [val, setVal] = useState(props.val);
+
   useEffect(() => {
     setVal(props.val);
-    props.set(props.val);
   }, [props.val]);
+  useEffect(() => {
+    console.log("change! ", val);
+  }, [val]);
   function handleOnChange(e) {
-    // e.target.value.trim()
     setVal(e.target.value);
-    props.set(e.target.value);
-    if (props.autoCompleteBySub) {
-      props.autoCompleteBySub(e.target.value);
-    }
+    dispatch(props.set(e.target.value));
   }
   return (
     <NumericFormat

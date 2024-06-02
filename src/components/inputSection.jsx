@@ -1,37 +1,58 @@
-import {
-  Box,
-  Select,
-  TextField,
-  Typography,
-  autocompleteClasses,
-} from "@mui/material";
+import { Box, InputAdornment, TextField } from "@mui/material";
 import InputBox from "./inputBox";
 import autoCompleteBySubscriber from "../services/autoComplete";
 import { useEffect, useState } from "react";
 import { MenuItem } from "@mui/material";
-import { Input } from "@mui/base";
-
+import { DirectionsCar, GpsFixed } from "@mui/icons-material";
 //redux
 import { useSelector, useDispatch } from "react-redux";
-import { setLicense } from "../features/license/licenseSlice";
+import { setLicense } from "../features/slices/licenseSlice";
+import { setInnerID } from "../features/slices/innerIDSlice";
+import { setSubscriber } from "../features/slices/subscriberSlice";
 //end of redux
 
 export default function InputSection(props) {
-  const [subscriber, setSubscriber] = useState(0);
-  // const [license, setLicense] = useState();
-  const license = useSelector((state) => state.license.value);
   const dispatch = useDispatch();
-  const [innerId, setInnerId] = useState();
+  const subscriber = useSelector((state) => state.subscriber.value);
+  const license = useSelector((state) => state.license.value);
+  const innerID = useSelector((state) => state.innerID.value);
   const [lastGRPS, setLastGRPS] = useState();
   const [autoCompleteData, setAutoCompleteData] = useState([]);
+
+  function selectLicense() {
+    if (license) {
+      console.log(autoCompleteData);
+      let licenseData = autoCompleteData[license];
+      if (!licenseData) {
+        return;
+      }
+      let temp = licenseData["inner_id"];
+      let lastGRPS = licenseData["last_GRPS"];
+      if (temp) {
+        temp = temp.replace(/^0+/, ""); //remove leading zeroes
+        dispatch(setInnerID(temp));
+        setLastGRPS(lastGRPS);
+      } else {
+        dispatch(setInnerID(""));
+        setLastGRPS("");
+      }
+    } else {
+      props.set.autoCompleteData();
+      dispatch(setInnerID(""));
+      setLastGRPS("");
+    }
+  }
   async function autoComplete() {
     const res = await autoCompleteBySubscriber(subscriber);
-    setAutoCompleteData(res);
-    props.set.autoCompleteData(res);
-    const licenseFirst = Object.keys(res)[0];
-    console.log("licenses = ", licenseFirst);
-    dispatch(setLicense(licenseFirst));
+    if (res === false) {
+      props.set.autoCompleteData([]);
+      setAutoCompleteData([]);
+    } else {
+      props.set.autoCompleteData(res);
+      setAutoCompleteData(res);
+    }
   }
+
   useEffect(() => {
     const timer = setTimeout(() => {
       console.log("typing has ended, calling autocomplete...");
@@ -41,28 +62,14 @@ export default function InputSection(props) {
   }, [subscriber]);
 
   useEffect(() => {
-    if (license) {
-      let temp = autoCompleteData[license]["inner_id"];
-      let lastGRPS = autoCompleteData[license]["last_GRPS"];
-      if (temp) {
-        temp = temp.replace(/^0+/, ""); //remove leading zeroes
-        setInnerId(temp);
-        setLastGRPS(lastGRPS);
-      } else {
-        setInnerId("");
-        setLastGRPS("");
-      }
-      // props.set.license(license);
-    } else {
-      // props.set.license();
-      props.set.autoCompleteData();
-      setInnerId("");
-      setLastGRPS("");
-    }
+    console.log("license use effect ! ", license);
+    selectLicense();
   }, [license]);
   useEffect(() => {
-    if (innerId) props.set.innerId(innerId);
-  }, [innerId]);
+    const licenseFirst = Object.keys(autoCompleteData)[0];
+    console.log("licenses = ", licenseFirst);
+    dispatch(setLicense(licenseFirst));
+  }, [autoCompleteData]);
 
   return (
     <Box
@@ -78,15 +85,21 @@ export default function InputSection(props) {
     >
       <InputBox
         label="מספר מנוי"
-        set={props.set.subscriber}
-        autoCompleteBySub={(sub) => setSubscriber(sub)}
+        set={setSubscriber}
+        autoCompleteBySub={setSubscriber}
       />
-      {/* <InputBox label="מספר רכב" set = {props.set.license} license = {license} /> */}
       <TextField
         label="מספר רכב"
         select
         value={license === undefined ? "" : license}
         onChange={(e) => dispatch(setLicense(e.target.value))}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <DirectionsCar />
+            </InputAdornment>
+          ),
+        }}
       >
         {Object.keys(autoCompleteData).map((optionLicense) => (
           <MenuItem value={optionLicense} key={optionLicense}>
@@ -94,8 +107,21 @@ export default function InputSection(props) {
           </MenuItem>
         ))}
       </TextField>
-      <InputBox label="מספר יחידה" val={innerId} set={props.set.innerId} />
-      {lastGRPS !== "" && <TextField value={lastGRPS} disabled></TextField>}
+      <InputBox label="מספר יחידה" val={innerID} set={setInnerID} />
+      {lastGRPS !== "" && (
+        <TextField
+          label="תאריך שידור אחרון"
+          value={lastGRPS}
+          disabled
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <GpsFixed />
+              </InputAdornment>
+            ),
+          }}
+        ></TextField>
+      )}
     </Box>
   );
 }
