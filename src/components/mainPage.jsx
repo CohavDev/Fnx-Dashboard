@@ -10,6 +10,7 @@ import { setLicense } from "../features/slices/licenseSlice";
 import { setInnerID } from "../features/slices/innerIDSlice";
 import { setSubscriber } from "../features/slices/subscriberSlice";
 import AlertDialogModal from "./alertDialog";
+import newWorkOrder from "../services/newWorkOrder";
 //end of redux
 
 export default function MainPage(props) {
@@ -40,6 +41,22 @@ export default function MainPage(props) {
       }
     }
   }
+  async function newWorkOrderHandleClick(isReal) {
+    if (autoCompleteData) {
+      const vehicle_id = autoCompleteData[license]["vehicle_id"];
+      const result = await newWorkOrder(
+        isReal,
+        subscriber,
+        vehicle_id,
+        setLoading
+      );
+      if (result) {
+        setMsgSuccess(result);
+      }
+    } else {
+      setMsgSuccess("בקשת שליחות נכשלה");
+    }
+  }
   return (
     <Box>
       <InputSection
@@ -56,19 +73,27 @@ export default function MainPage(props) {
           צמד
         </Button>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Button variant="outlined">פתח שליחות פקטיבית</Button>
-
-          {/* <Button
+          <AlertDialogModal
+            buttonText={"פתח שליחות פקטיבית"}
+            icon={"none"}
+            callBackConfirm={() => newWorkOrderHandleClick(false)}
             loading={loading}
-            variant="outlined"
-            color="danger"
-            onClick={() => replaceUnitHandleClick()}
-          >
-            החלף יחידה (כשיש יחידה קיימת)
-          </Button> */}
+          />
+
           <AlertDialogModal
             buttonText={"החלף יחידה (כשיש יחידה קיימת)"}
+            icon={"airplane"}
             callBackConfirm={replaceUnitHandleClick}
+            loading={loading}
+          />
+        </Box>
+        <Box
+          sx={{ display: "flex", flexDirection: "row-reverse", marginTop: 2 }}
+        >
+          <AlertDialogModal
+            buttonText={"פתח שליחות חדשה אמיתית"}
+            icon={"airplane"}
+            callBackConfirm={() => newWorkOrderHandleClick(true)}
             loading={loading}
           />
         </Box>

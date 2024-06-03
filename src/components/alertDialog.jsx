@@ -15,8 +15,8 @@ export default function AlertDialogModal(props) {
     <>
       <Button
         variant="outlined"
-        color="danger"
-        endDecorator={<FlightTakeoff />}
+        color={props.icon === "airplane" ? "danger" : "warning"}
+        endDecorator={props.icon === "airplane" ? <FlightTakeoff /> : <></>}
         onClick={() => setOpen(true)}
       >
         {props.buttonText}
@@ -34,7 +34,7 @@ export default function AlertDialogModal(props) {
           <DialogActions>
             <Button
               variant="solid"
-              color="danger"
+              color={props.icon === "airplane" ? "danger" : "primary"}
               onClick={() => {
                 props.callBackConfirm();
                 setOpen(false);
