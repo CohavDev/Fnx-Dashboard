@@ -6,7 +6,7 @@ import DialogContent from "@mui/joy/DialogContent";
 import DialogActions from "@mui/joy/DialogActions";
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
-import { FlightTakeoff } from "@mui/icons-material";
+import { Close, FlightTakeoff } from "@mui/icons-material";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 
 export default function AlertDialogModal(props) {
@@ -15,8 +15,21 @@ export default function AlertDialogModal(props) {
     <>
       <Button
         variant="outlined"
-        color={props.icon === "airplane" ? "danger" : "warning"}
-        endDecorator={props.icon === "airplane" ? <FlightTakeoff /> : <></>}
+        sx={{ width: "25ch", m: 3, p: 2 }}
+        color={
+          props.icon === "airplane" || props.icon === "disconnect"
+            ? "primary"
+            : "warning"
+        }
+        endDecorator={
+          props.icon === "airplane" ? (
+            <FlightTakeoff />
+          ) : props.icon === "disconnect" ? (
+            <Close />
+          ) : (
+            <></>
+          )
+        }
         onClick={() => setOpen(true)}
       >
         {props.buttonText}
@@ -29,7 +42,9 @@ export default function AlertDialogModal(props) {
           </DialogTitle>
           <Divider />
           <DialogContent sx={{ direction: "rtl" }}>
-            האם אתה בטוח שברצונך לפתוח שליחות חדשה?
+            {props.icon === "disconnect"
+              ? "לנתק את היחידה?"
+              : "האם אתה בטוח שברצונך לפתוח שליחות חדשה?"}
           </DialogContent>
           <DialogActions>
             <Button
@@ -40,7 +55,7 @@ export default function AlertDialogModal(props) {
                 setOpen(false);
               }}
             >
-              פתח שליחות חדשה
+              {props.icon === "disconnect" ? "נתק יחידה" : "פתח שליחות חדשה"}
             </Button>
             <Button
               variant="plain"

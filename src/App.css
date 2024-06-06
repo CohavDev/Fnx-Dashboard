@@ -16,6 +16,8 @@
 .App-header {
   /* background-color: #ffffff; */
   background: linear-gradient(120deg, #EDD1EF, #d1a624);
+  /* background: linear-gradient(120deg, #e1cbf0,#d4a4e4, #b75dd5); */
+
   min-height: 100vh;
   display: flex;
   flex-direction: column;

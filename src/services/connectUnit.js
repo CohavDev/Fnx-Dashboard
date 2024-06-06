@@ -5,7 +5,7 @@ export default async function connectUnit(
   innerId,
   loadingCallBack
 ) {
-  const URL = "http://localhost:5038/api/utilities/connectUnit";
+  const URL = "http://192.168.30.109:5038/api/utilities/connectUnit";
   loadingCallBack(true);
   console.log(
     "connect unit to vehicle: ",

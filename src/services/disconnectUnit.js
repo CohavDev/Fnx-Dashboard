@@ -1,21 +1,16 @@
 import axios from "axios";
-export default async function replaceUnit(
-  license,
-  vehicle_id,
-  loadingCallBack
-) {
-  const URL = "http://192.168.30.109:5038/api/traffilogHtml/replaceUnit";
+export default async function disconnectUnit(innerId, loadingCallBack) {
+  const URL = "http://192.168.30.109:5038/api/utilities/disconnectUnit";
   loadingCallBack(true);
-  console.log("calling replace Unit API");
-  if (license === "" || vehicle_id === "") {
+  console.log("disconnect unit", innerId);
+  if (innerId === "") {
     loadingCallBack(false);
-    return "License is missing";
+    return "InnerId is missing";
   }
   try {
     return await axios
       .post(URL, {
-        license: license,
-        vehicle_id: vehicle_id,
+        innerId: innerId,
       })
       .then((res) => {
         loadingCallBack(false);
@@ -29,7 +24,6 @@ export default async function replaceUnit(
   } catch (error) {
     console.log(error);
     loadingCallBack(false);
-
     return "Network error occured";
   }
 }

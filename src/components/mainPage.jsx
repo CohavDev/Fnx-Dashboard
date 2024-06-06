@@ -11,6 +11,7 @@ import { setInnerID } from "../features/slices/innerIDSlice";
 import { setSubscriber } from "../features/slices/subscriberSlice";
 import AlertDialogModal from "./alertDialog";
 import newWorkOrder from "../services/newWorkOrder";
+import disconnectUnit from "../services/disconnectUnit";
 //end of redux
 
 export default function MainPage(props) {
@@ -28,30 +29,50 @@ export default function MainPage(props) {
       setMsgSuccess(result);
     }
   }
+  async function disconnectUnitHandleClick() {
+    const result = await disconnectUnit(innerID, setLoading);
+    if (result) {
+      setMsgSuccess(result);
+    } else {
+      setMsgSuccess("ניתוק יחידה נכשל");
+    }
+  }
   async function replaceUnitHandleClick() {
     if (autoCompleteData) {
-      const vehicle_id = autoCompleteData[license]["vehicle_id"];
-      const result = await replaceUnit(license, vehicle_id, setLoading);
-      if (result) {
-        setMsgSuccess(
-          "בקשה לשליחות חדשה נשלחה, בדוק בדינמיקה כדי לוודא שהתקבלה"
-        );
-      } else {
+      try {
+        const vehicle_id = autoCompleteData[license]["vehicle_id"];
+        const result = await replaceUnit(license, vehicle_id, setLoading);
+        if (result) {
+          setMsgSuccess(
+            "בקשה לשליחות חדשה נשלחה, בדוק בדינמיקה כדי לוודא שהתקבלה"
+          );
+        } else {
+          setMsgSuccess("בקשת שליחות נכשלה");
+        }
+      } catch (error) {
+        console.log(error);
         setMsgSuccess("בקשת שליחות נכשלה");
       }
+    } else {
+      setMsgSuccess("בקשת שליחות נכשלה");
     }
   }
   async function newWorkOrderHandleClick(isReal) {
     if (autoCompleteData) {
-      const vehicle_id = autoCompleteData[license]["vehicle_id"];
-      const result = await newWorkOrder(
-        isReal,
-        subscriber,
-        vehicle_id,
-        setLoading
-      );
-      if (result) {
-        setMsgSuccess(result);
+      try {
+        const vehicle_id = autoCompleteData[license]["vehicle_id"];
+        const result = await newWorkOrder(
+          isReal,
+          subscriber,
+          vehicle_id,
+          setLoading
+        );
+        if (result) {
+          setMsgSuccess(result);
+        }
+      } catch (error) {
+        console.log(error);
+        setMsgSuccess("בקשת שליחות נכשלה");
       }
     } else {
       setMsgSuccess("בקשת שליחות נכשלה");
@@ -67,7 +88,7 @@ export default function MainPage(props) {
       <Box sx={{ paddingTop: 10 }}>
         <Button
           loading={loading}
-          sx={{ width: "25ch", m: 1 }}
+          sx={{ width: "25ch", height: "6ch", m: 1 }}
           onClick={() => connectUnitHandleClick()}
         >
           צמד
@@ -88,12 +109,23 @@ export default function MainPage(props) {
           />
         </Box>
         <Box
-          sx={{ display: "flex", flexDirection: "row-reverse", marginTop: 2 }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "row-reverse",
+            marginTop: 2,
+          }}
         >
           <AlertDialogModal
             buttonText={"פתח שליחות חדשה אמיתית"}
             icon={"airplane"}
             callBackConfirm={() => newWorkOrderHandleClick(true)}
+            loading={loading}
+          />
+          <AlertDialogModal
+            buttonText={"נתק יחידה"}
+            icon={"disconnect"}
+            callBackConfirm={() => disconnectUnitHandleClick()}
             loading={loading}
           />
         </Box>

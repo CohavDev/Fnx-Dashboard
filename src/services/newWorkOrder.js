@@ -6,7 +6,7 @@ export default async function newWorkOrder(
   loadingCallBack
 ) {
   const URL =
-    "http://localhost:5038/api/utilities/" +
+    "http://192.168.30.109:5038/api/utilities/" +
     (isReal ? "realNewWorkOrder" : "fakeNewWorkOrder");
   loadingCallBack(true);
   console.log("calling new work order API", subscriber, vehicle_id);
@@ -43,7 +43,7 @@ export default async function newWorkOrder(
   }
 }
 async function getClientID(subscriber) {
-  const URL = "http://localhost:5038/api/traffilogHtml/getClientID";
+  const URL = "http://192.168.30.109:5038/api/traffilogHtml/getClientID";
   try {
     return await axios
       .get(URL, { params: { subscriber: subscriber } })
